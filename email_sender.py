@@ -7,63 +7,65 @@ import os
 
 load_dotenv()
 
-email_password = os.environ.get('EMAIL_PASSWORD')
 sender_email = os.environ.get('SENDER_EMAIL')
-subject = "Invitation for your students: Project Work in DNA Barcoding (Free DNA Sequencing Included)"
+email_password = os.environ.get('EMAIL_PASSWORD')
 
+# change the email subject here before sending
+subject = "Get Certified in Molecular Docking – Limited Seats for December Batch" 
+
+#read email body from email.txt
 def read_email_content():
-    """Read email content from file"""
     try:
-        with open('email.txt', 'r', encoding='utf-8') as file:
+        with open('email-body.txt', 'r', encoding='utf-8') as file:
             return file.read()
     except FileNotFoundError:
-        print("❌ Error: email.txt not found")
+        print("Error: email-body.txt not found")
         return None
     except Exception as e:
-        print(f"❌ Error reading email content: {e}")
+        print(f"Error reading email-body.txt content: {e}")
         return None
 
+#read emails.csv
 def read_email_list():
-    """Read and validate email list from CSV"""
     try:
-        with open('test_emails.csv', newline='', encoding='utf-8') as csvfile:
+        with open('emails.csv', newline='', encoding='utf-8') as csvfile:
             reader = csv.reader(csvfile)
             emails = [row[0].strip() for row in reader if len(row) >= 1 and row[0].strip() != '']
             return emails
     except FileNotFoundError:
-        print("❌ Error: BB-email-database.csv not found")
+        print("Error: emails.csv not found")
         return []
     except Exception as e:
-        print(f"❌ Error reading email list: {e}")
+        print(f"Error reading emails.csv: {e}")
         return []
 
+#create and return smtp connection
 def create_smtp_connection():
-    """Create and return SMTP connection"""
     try:
         server = smtplib.SMTP_SSL('smtpout.secureserver.net', 465)
         server.login(sender_email, email_password)
         return server
     except Exception as e:
-        print(f"❌ Failed to create SMTP connection: {e}")
+        print(f"Error: Failed to create SMTP connection: {e}")
         return None
 
+#send emails
 def send_individual_email(server, recipient, content):
-    """Send email to individual recipient"""
     msg = EmailMessage()
     msg['Subject'] = subject
     msg['From'] = sender_email
     msg['To'] = recipient
     msg.set_content(content)
     
-    # Attach poster image
+    #attach poster image
     try:
         with open('poster.jpeg', 'rb') as img:
             img_data = img.read()
             msg.add_attachment(img_data, maintype='image', subtype='jpeg', filename='poster.jpeg')
     except FileNotFoundError:
-        print("⚠️  Warning: poster.jpeg not found, sending without attachment")
+        print("Warning: poster.jpeg not found, sending without attachment")
     except Exception as e:
-        print(f"⚠️  Warning: Could not attach image: {e}")
+        print(f"Warning: Could not attach image: {e}")
     
     try:
         server.send_message(msg)
@@ -72,12 +74,11 @@ def send_individual_email(server, recipient, content):
         return False, str(e)
 
 def main():
-    # Configuration
-    BATCH_SIZE = 50  # Number of emails before reconnecting
+    BATCH_SIZE = 25  # Number of emails before reconnecting
     EMAIL_DELAY = 2  # Seconds between individual emails
-    BATCH_DELAY = 30  # Seconds between batches
+    BATCH_DELAY = 20  # Seconds between batches
     
-    print("🚀 Starting individual email sending process...")
+    print("Starting individual email sending process...")
     
     # Read email content and list
     content = read_email_content()
@@ -105,10 +106,10 @@ def main():
                     pass
                 time.sleep(BATCH_DELAY)
             
-            print(f"\n🔄 Creating SMTP connection (Batch {((i-1) // BATCH_SIZE) + 1})")
+            print(f"\nCreating SMTP connection (Batch {((i-1) // BATCH_SIZE) + 1})")
             server = create_smtp_connection()
             if not server:
-                print("❌ Failed to create SMTP connection. Stopping.")
+                print("Error: Failed to create SMTP connection. Stopping.")
                 break
         
         # Send individual email
@@ -130,9 +131,9 @@ def main():
         if i < total_emails:
             time.sleep(EMAIL_DELAY)
         
-        # Progress update every 25 emails
-        if i % 25 == 0:
-            print(f"📊 Progress: {i}/{total_emails} processed (Sent: {sent_count}, Failed: {failed_count})")
+        # Progress update every batch
+        if i % BATCH_SIZE == 0:
+            print(f"Progress: {i}/{total_emails} processed (Sent: {sent_count}, Failed: {failed_count})")
     
     # Clean up connection
     if server:
@@ -142,14 +143,14 @@ def main():
             pass
     
     # Final summary
-    print(f"\n🎉 Email sending complete!")
-    print(f"📊 Final Results:")
-    print(f"   • Total emails: {total_emails}")
-    print(f"   • Successfully sent: {sent_count}")
-    print(f"   • Failed: {failed_count}")
+    print(f"\nEmail sending complete!")
+    print(f"Final Results:")
+    print(f"Total emails: {total_emails}")
+    print(f"Successfully sent: {sent_count}")
+    print(f"Failed: {failed_count}")
     
     if failed_count > 0:
-        print(f"📝 Check 'failed_emails.log' for details on failed emails")
+        print(f"Check 'failed_emails.log' for details on failed emails")
 
 if __name__ == "__main__":
     main()

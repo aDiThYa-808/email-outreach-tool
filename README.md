@@ -1,13 +1,13 @@
-# 📬 Email Outreach Tool
+# Email Outreach Tool
 
-A simple Python tool to automate cold outreach — from scraping emails to sending them.
+A simple Python tool to automate cold email outreach.
 
-## 🔧 Features
+## Features
 
-- **`email_scrapper.py`** – Scrapes email addresses from a website, including _obfuscated formats_ like `name at domain dot com`. Stores results in `emails.csv` *(auto-ignored via `.gitignore`)*  
-- **`email_sender_leads.py`** – Sends a templated email (with optional attachments) to each contact in `emails.csv`
+- **`email_scrapper.py`** – Scrapes email addresses from a webpage. Stores results in `emails-output.csv` *(auto-ignored via `.gitignore`)*  
+- **`email_sender.py`** – Sends a templated email (with optional attachment) to each contact in `emails.csv`. Email body must be writtin inside `email-body.txt`.
 
-## ⚙️ Setup
+## Setup
 
 1. **Clone the repo**
 
@@ -32,16 +32,20 @@ pip install python-dotenv
 4. **Run the scripts**
 
 ```bash
-# To scrape emails (handles obfuscation)
+# To scrape emails
 python email_scrapper.py
 
 # To send emails
 python email_sender_leads.py
 ```
 
-## ✅ Notes
+## Files that you must create after cloning
+- `emails.csv`: contains the list of email addresses (in the first row) 
+- `email-body.txt`: contains body of the email
+- `poster.jpeg`/`poster.png`: image to add as attachment
+- `failed_emails.logs`: to keep track of failed emails
+- `emails-output`: store scrapped emails
 
+## Notes
 - `emails.csv` is `.gitignored` to avoid leaking scraped data.
-- Batching and delays can be configured in `email_sender_leads.py` to avoid rate limits or blacklisting.
-- Create `failed_emails.logs` to keep track of failed emails
-- Uses secure SMTP connection via `smtplib`.
+- Batch size and delay can be configured in `email_sender.py` to avoid rate limits or blacklisting.

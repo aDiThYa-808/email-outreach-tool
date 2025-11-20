@@ -1,13 +1,12 @@
-#simple scrapper that scrapes emails from webpages with simple structure and no ofuscation
 import requests
 from bs4 import BeautifulSoup
 import re
 import csv
 
-# === Config ===
+# add the webpage url here 
 url = "https://www.drngpasc.ac.in/best-arts-college-for-bsc-clinical-laboratory-technology-in-coimbatore-tamilnadu"
 college_name = "Dr. N.G.P. Arts and Science College"
-output_file = "emails.csv"
+output_file = "emails-output.csv"
 
 def extract_emails(text):
     text = text.replace('[at]', '@').replace('(at)', '@')
@@ -44,8 +43,8 @@ def save_to_csv(rows, filename):
         writer = csv.writer(f)
         writer.writerows(rows)
 
-# === Run ===
+
 data = scrape_emails(url, college_name)
 save_to_csv(data, output_file)
 
-print(f"✓ Appended {len(data)} emails to {output_file}")
+print(f"Appended {len(data)} emails to {output_file}")
