@@ -28,8 +28,16 @@ EMAIL_PASSWORD=yourpassword
 ```bash
 pip install python-dotenv
 ```
+4. **Create required files**
 
-4. **Run the scripts**
+```bash
+touch emails.csv
+touch email-body.txt
+touch emails-output.csv
+touch failed_emails.log
+```
+
+6. **Run the scripts**
 
 ```bash
 # To scrape emails
@@ -43,9 +51,9 @@ python email_sender_leads.py
 - `emails.csv`: contains the list of email addresses (in the first row) 
 - `email-body.txt`: contains body of the email
 - `poster.jpeg`/`poster.png`: image to add as attachment
-- `failed_emails.logs`: to keep track of failed emails
+- `failed_emails.log`: to keep track of failed emails
 - `emails-output`: store scrapped emails
 
 ## Notes
-- `emails.csv` is `.gitignored` to avoid leaking scraped data.
+- `emails.csv` and `emails-output.csv` are `.gitignored` to avoid leaking data.
 - Batch size and delay can be configured in `email_sender.py` to avoid rate limits or blacklisting.
